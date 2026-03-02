@@ -41,3 +41,14 @@ def place_order(request, product_id):
     
     # अगर पहली बार पेज खोल रहे हैं (GET request), तो फॉर्म दिखाओ
     return render(request, 'shop/order_form.html', {'product': product})
+    from .cart import Cart
+
+def add_to_cart(request, product_id):
+    cart = Cart(request)
+    cart.add(product_id)
+    return redirect('cart_detail')
+
+def cart_detail(request):
+    cart = Cart(request)
+    # यहाँ हम कार्ट के प्रोडक्ट्स को डेटाबेस से निकालेंगे दिखाने के लिए
+    return render(request, 'shop/cart.html', {'cart': cart})
