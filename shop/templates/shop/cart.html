@@ -17,9 +17,6 @@
         padding: 15px;
         border-bottom: 1px solid #ddd;
     }
-    .cart-item:last-child {
-        border-bottom: 2px solid #232f3e;
-    }
     .cart-details h4 {
         margin: 0;
         font-size: 18px;
@@ -41,4 +38,35 @@
         border-radius: 8px;
         padding: 12px 25px;
         cursor: pointer;
-        font
+        font-weight: bold;
+        font-size: 16px;
+    }
+</style>
+
+<div class="cart-container">
+    <h2>Shopping Cart 🛒</h2>
+    <hr>
+
+    {% if cart.cart.items %}
+        {% for key, value in cart.cart.items %}
+            <div class="cart-item">
+                <div class="cart-details">
+                    <h4>{{ value.name }}</h4>
+                    <p>Quantity: {{ value.quantity }}</p>
+                </div>
+                <div class="cart-price">₹{{ value.price }}</div>
+            </div>
+        {% endfor %}
+
+        <div class="total-section">
+            <p>Total: <span class="cart-price">₹{{ cart.get_total_price }}</span></p>
+            <button class="checkout-btn">Proceed to Checkout</button>
+        </div>
+    {% else %}
+        <div style="text-align:center; padding:50px;">
+            <h3>Your cart is empty! 😔</h3>
+            <a href="/">Keep Shopping</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
