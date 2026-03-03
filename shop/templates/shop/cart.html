@@ -3,69 +3,116 @@
 {% block content %}
 <style>
     .cart-container {
-        max-width: 1000px;
-        margin: 20px auto;
+        max-width: 900px;
+        margin: 30px auto;
         padding: 20px;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .cart-header {
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
     }
     .cart-item {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        padding: 15px;
-        border-bottom: 1px solid #ddd;
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
     }
-    .cart-details h4 {
+    .cart-item img {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        border-radius: 5px;
+        margin-right: 20px;
+        background: #f9f9f9;
+    }
+    .cart-info {
+        flex-grow: 1;
+    }
+    .cart-info h4 {
         margin: 0;
         font-size: 18px;
-        color: #007185;
+        color: #232f3e;
     }
-    .cart-price {
+    .cart-info p {
+        margin: 5px 0;
+        color: #666;
+        font-size: 14px;
+    }
+    .price-col {
         font-size: 18px;
         font-weight: bold;
         color: #B12704;
-    }
-    .total-section {
+        min-width: 100px;
         text-align: right;
+    }
+    .total-box {
+        background: #f3f3f3;
+        padding: 20px;
+        border-radius: 8px;
         margin-top: 20px;
-        font-size: 20px;
+        text-align: right;
+    }
+    .final-amount {
+        font-size: 24px;
+        color: #B12704;
+        font-weight: bold;
     }
     .checkout-btn {
-        background-color: #ffd814;
+        background: #ffd814;
         border: 1px solid #fcd200;
-        border-radius: 8px;
-        padding: 12px 25px;
-        cursor: pointer;
+        padding: 12px 30px;
+        border-radius: 25px;
         font-weight: bold;
-        font-size: 16px;
+        cursor: pointer;
+        margin-top: 15px;
+        width: 100%;
+        max-width: 300px;
     }
 </style>
 
 <div class="cart-container">
-    <h2>Shopping Cart 🛒</h2>
-    <hr>
+    <div class="cart-header">
+        <h2>Shopping Cart 🛒</h2>
+    </div>
 
     {% if cart.cart.items %}
         {% for key, value in cart.cart.items %}
             <div class="cart-item">
-                <div class="cart-details">
+                {% if value.image_url %}
+                    <img src="{{ value.image_url }}" alt="{{ value.name }}">
+                {% else %}
+                    <img src="https://via.placeholder.com/80" alt="No Image">
+                {% endif %}
+
+                <div class="cart-info">
                     <h4>{{ value.name }}</h4>
-                    <p>Quantity: {{ value.quantity }}</p>
+                    <p>Quantity: <strong>{{ value.quantity }}</strong></p>
+                    <p style="color: #007600;">In Stock</p>
                 </div>
-                <div class="cart-price">₹{{ value.price }}</div>
+
+                <div class="price-col">
+                    ₹{{ value.price }}
+                </div>
             </div>
         {% endfor %}
 
-        <div class="total-section">
-            <p>Total: <span class="cart-price">₹{{ cart.get_total_price }}</span></p>
-            <button class="checkout-btn">Proceed to Checkout</button>
+        <div class="total-box">
+            <p style="font-size: 18px; margin: 0;">Total Amount ({{ cart.cart.items|length }} items):</p>
+            <div class="final-amount">₹{{ cart.get_total_price }}</div>
+            
+            <a href="/checkout/">
+                <button class="checkout-btn">Proceed to Buy (Lucknow Delivery)</button>
+            </a>
         </div>
+
     {% else %}
-        <div style="text-align:center; padding:50px;">
-            <h3>Your cart is empty! 😔</h3>
-            <a href="/">Keep Shopping</a>
+        <div style="text-align: center; padding: 40px;">
+            <h3>Dost, Cart khali hai! 😔</h3>
+            <p><a href="/" style="color: #007185; text-decoration: none; font-weight: bold;">Kuch badhiya sa order karo yahan se</a></p>
         </div>
     {% endif %}
 </div>

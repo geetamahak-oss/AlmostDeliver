@@ -1,32 +1,41 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Product  # पक्का करें कि आपके मॉडल का नाम Product ही है
+from django.shortcuts import render, redirect, get_object_ some_object_or_404
+from .models import Product
 from .cart import Cart
 
-# 1. होमपेज (जो एरर दे रहा था)
+# 1. Home Page View (Sare products dikhane ke liye)
 def index(request):
     products = Product.objects.all()
     return render(request, 'shop/index.html', {'products': products})
 
-# 2. सामान की पूरी जानकारी
-def product_detail(request, id):
-    product = get_object_or_404(Product, id=id)
-    return render(request, 'shop/product_detail.html', {'product': product})
-
-# 3. कार्ट में सामान जोड़ना
+# 2. Add to Cart View (Ismein humne Photo/Image URL add kiya hai)
 def add_to_cart(request, product_id):
     cart = Cart(request)
-    cart.add(product_id)
+    product = get_object_or_404(Product, id=product_id)
+    
+    # Cart mein product save karte waqt uska naam, daam aur photo bhej rahe hain
+    cart.add(
+        product=product, 
+        price=product.price, 
+        name=product.name,
+        image_url=product.image_url  # <-- Ye line photo dikhane ke liye zaroori hai
+    )
+    
     return redirect('cart_detail')
 
-# 4. कार्ट का पेज देखना
+# 3. Cart Detail View (Cart ka saman dikhane ke liye)
 def cart_detail(request):
     cart_obj = Cart(request)
-    # यहाँ हम कार्ट के अंदर के डेटा को संभालते हैं
     return render(request, 'shop/cart.html', {'cart': cart_obj})
 
-# 5. कार्ट से सामान हटाना (Optional पर काम आएगा)
+# 4. Item Remove karne ke liye (Optional)
 def item_clear(request, id):
     cart = Cart(request)
-    product = Product.objects.get(id=id)
+    product = get_object_or_404(Product, id=id)
     cart.remove(product)
+    return redirect("cart_detail")
+
+# 5. Pura Cart khali karne ke liye (Optional)
+def cart_clear(request):
+    cart = Cart(request)
+    cart.clear()
     return redirect("cart_detail")
