@@ -1,8 +1,64 @@
 {% extends 'shop/base.html' %}
+
 {% block content %}
-<div style="text-align: center; padding: 100px 20px;">
-    <h1 style="color: #232f3e;">Checkout Page 🚚</h1>
-    <p style="font-size: 18px;">जल्द ही यहाँ हम आपका नाम और लखनऊ का पता मांगेंगे!</p>
-    <a href="/" style="color: #007185; font-weight: bold; text-decoration: none;">वापस शॉपिंग करें</a>
+<style>
+    .checkout-container { max-width: 600px; margin: 40px auto; padding: 30px; background: #fff; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
+    .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
+    .order-summary { background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px dashed #007185; }
+    .place-order-btn { background: #ffd814; border: 1px solid #fcd200; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 18px; cursor: pointer; transition: 0.3s; }
+    .place-order-btn:hover { background: #f7ca00; }
+</style>
+
+<div class="checkout-container">
+    <h2 style="text-align: center;">Delivery Details 🚚</h2>
+    <p style="text-align: center; color: #666;">Lucknow mein fast delivery ke liye sahi pata bharein.</p>
+    
+    <div class="order-summary">
+        <h4>Order Total: ₹{{ cart.get_total_price }}</h4>
+        <p style="font-size: 14px; color: #555;">Payment Mode: <b>Cash on Delivery (COD)</b></p>
+    </div>
+
+    <form id="checkout-form">
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="name" placeholder="Apna naam likhein" required>
+        </div>
+        <div class="form-group">
+            <label>Mobile Number</label>
+            <input type="tel" id="phone" placeholder="10 digit mobile number" required>
+        </div>
+        <div class="form-group">
+            <label>Full Address (Lucknow)</label>
+            <textarea id="address" rows="3" placeholder="Ghar ka pata, Landmark aur Area (e.g. Aliganj, Gomti Nagar)" required></textarea>
+        </div>
+        
+        <button type="submit" class="place-order-btn">Confirm Order ✅</button>
+    </form>
 </div>
+
+<script>
+document.getElementById('checkout-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('name').value;
+    const phone = document.getElementById('phone').value;
+    const address = document.getElementById('address').value;
+    const total = "{{ cart.get_total_price }}";
+    
+    // WhatsApp Message Format
+    const message = `*Naya Order Aaya Hai!* 🛍️%0A%0A` +
+                    `*Naam:* ${name}%0A` +
+                    `*Phone:* ${phone}%0A` +
+                    `*Address:* ${address}%0A` +
+                    `*Total Amount:* ₹${total}%0A%0A` +
+                    `_AlomostDeliver se order kiya gaya hai_`;
+    
+    // Tumhara WhatsApp Number yahan daalo (with country code 91)
+    const whatsappNumber = "91XXXXXXXXXX"; // <-- Yahan apna number likho
+    
+    window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
+});
+</script>
 {% endblock %}
