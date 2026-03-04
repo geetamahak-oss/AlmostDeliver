@@ -2,19 +2,19 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from shop import views  # Shop app के views को यहाँ इम्पोर्ट किया
+from shop import views  # Shop views ko import kiya
 
 urlpatterns = [
-    # 1. एडमिन पैनल
     path('admin/', admin.site.urls),
     
-    # 2. दुकान के मुख्य पेज (Home, Cart, Checkout)
-    path('', include('shop.urls')), 
-    
-    # 3. ऑर्डर ट्रैकिंग (इसे सीधा यहीं रखा है ताकि /track/ खुले)
+    # Tracking page ko priority di gayi hai
     path('track/', views.track_order, name='track_order'),
+    
+    # Baki saari shop ki URLs
+    path('', include('shop.urls')),
 ]
 
-# फोटो (Images) दिखाने के लिए सेटिंग्स
+# Static aur Media files settings
 if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
