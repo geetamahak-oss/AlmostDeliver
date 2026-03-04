@@ -1,29 +1,36 @@
 from django.db import models
 
-# यह हमारी दुकान के सामान का पक्का ढांचा है
-from django.db import models
-
 class Product(models.Model):
     name = models.CharField(max_length=200)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
-    price = models.IntegerField()
-    old_price = models.IntegerField(default=0)
-    image_url = models.TextField()
-    
-    # यह रही वो नई लाइन जो आपको जोड़नी है:
-    # 'default="General"' का मतलब है कि पुराने सामानों में अपने आप 'General' लिखा आ जाएगा।
-    category = models.CharField(max_length=100, default="General") 
-    delivery_time = models.CharField(max_length=100, default="24-48 घंटों में")
+    image_url = models.URLField(max_length=500)
 
     def __str__(self):
         return self.name
 
 class Order(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE) # कौन सा सामान?
-    customer_name = models.CharField(max_length=100) # ग्राहक का नाम
-    address = models.TextField() # पता
-    phone = models.CharField(max_length=15) # फोन नंबर
-    order_date = models.DateTimeField(auto_now_add=True) # कब खरीदा?
+    # Status ke options jo Admin panel mein dropdown bankar aayenge
+    STATUS_CHOICES = (
+        ('Pending', 'Pending - Order mil gaya hai'),
+        ('Packed', 'Packed - Pack ho gaya hai'),
+        ('Shipped', 'Shipped - Lucknow se nikal gaya hai'),
+        ('Delivered', 'Delivered - Pahunch gaya!'),
+        ('Cancelled', 'Cancelled - Cancel ho gaya'),
+    )
+
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField(default="example@gmail.com")
+    address = models.TextField()
+    city = models.CharField(max_length=100, default="Lucknow")
+    phone = models.CharField(max_length=15)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    # Tracking Status Line
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Order for {self.product.name} by {self.customer_name}"
+        return f"Order #{self.id} - {self.first_name} ({self.status})"
