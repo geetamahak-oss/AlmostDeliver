@@ -1,45 +1,77 @@
-{% extends 'shop/base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>आपकी टोकरी - AlmostDeliver</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Poppins', sans-serif; }
+        .cart-container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 50px; }
+        .btn-checkout { background-color: #28a745; color: white; font-weight: bold; }
+        .btn-checkout:hover { background-color: #218838; }
+        .product-img { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; }
+    </style>
+</head>
+<body>
 
-{% block content %}
-<style>
-    .cart-container { max-width: 900px; margin: 30px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-    .cart-item { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
-    .cart-item img { width: 80px; height: 80px; object-fit: contain; margin-right: 20px; }
-    .cart-info { flex-grow: 1; }
-    .total-section { margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: right; border: 1px solid #ddd; }
-    .grand-total-price { color: #B12704; font-size: 24px; font-weight: bold; }
-    .checkout-btn { background: #ffd814; border: 1px solid #fcd200; padding: 12px 30px; border-radius: 25px; font-weight: bold; cursor: pointer; text-decoration: none; color: black; display: inline-block; margin-top: 10px; }
-</style>
+<div class="container">
+    <div class="cart-container">
+        <h2 class="mb-4 text-center">🛒 आपकी शॉपिंग कार्ट</h2>
+        
+        <table class="table align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>प्रोडक्ट</th>
+                    <th>नाम</th>
+                    <th>कीमत</th>
+                    <th>मात्रा (Qty)</th>
+                    <th>कुल</th>
+                    <th>हटाएं</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart %}
+                {% with product=item.product %}
+                <tr>
+                    <td>
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" class="product-img" alt="{{ product.name }}">
+                        {% else %}
+                            <img src="https://via.placeholder.com/80" class="product-img" alt="No image">
+                        {% endif %}
+                    </td>
+                    <td><strong>{{ product.name }}</strong></td>
+                    <td>₹{{ item.price }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ item.total_price }}</td>
+                    <td>
+                        <a href="{% url 'item_clear' product.id %}" class="btn btn-sm btn-outline-danger">❌</a>
+                    </td>
+                </tr>
+                {% endwith %}
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5">
+                        <h4>आपकी टोकरी खाली है! 😔</h4>
+                        <a href="{% url 'index' %}" class="btn btn-primary mt-3">अभी शॉपिंग करें</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-<div class="cart-container">
-    <h2>Shopping Cart 🛒</h2>
-    <hr>
-    
-    {% if cart.cart.items %}
-        {% for key, value in cart.cart.items %}
-            <div class="cart-item">
-                <img src="{{ value.image_url }}" alt="{{ value.name }}">
-                <div class="cart-info">
-                    <h4>{{ value.name }}</h4>
-                    <p>Price: ₹{{ value.price }} | Quantity: {{ value.quantity }}</p>
-                    <a href="{% url 'item_clear' value.product_id %}" style="color: #007185; text-decoration: none; font-size: 13px;">Remove</a>
-                </div>
-                <div style="font-weight: bold;">₹{{ value.total }}</div>
+        {% if cart %}
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <h4>कुल राशि: <span class="text-success">₹{{ cart.get_total_price }}</span></h4>
+            <div>
+                <a href="{% url 'index' %}" class="btn btn-outline-secondary me-2">और जोड़ें</a>
+                <a href="{% url 'checkout' %}" class="btn btn-checkout px-5">Check Out करें 🚀</a>
             </div>
-        {% endfor %}
-
-        <div class="total-section">
-            <span style="font-size: 18px;">Subtotal ({% with total_items=cart.cart.items|length %}{{ total_items }}{% endwith %} items): </span>
-            <span class="grand-total-price">₹{{ cart.get_total_price }}</span>
-            <br>
-            <a href="{% url 'checkout' %}" class="checkout-btn">Proceed to Buy (Checkout)</a>
         </div>
-
-    {% else %}
-        <div style="text-align: center; padding: 50px;">
-            <h3>Aapka cart khali hai! 😔</h3>
-            <a href="/">Saman kharidne ke liye yahan click karein</a>
-        </div>
-    {% endif %}
+        {% endif %}
+    </div>
 </div>
-{% endblock %}
+
+</body>
+</html>

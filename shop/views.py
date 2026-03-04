@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Order
-from .cart import Cart  # सुनिश्चित करें कि shop/cart.py मौजूद है
+from .cart import Cart 
 
-# 1. होमपेज (सारे प्रोडक्ट्स दिखाने के लिए)
+# 1. होमपेज (सारे पापड़ और प्रोडक्ट्स यहाँ दिखेंगे)
 def index(request):
     products = Product.objects.all()
     return render(request, 'shop/index.html', {'products': products})
@@ -27,16 +27,15 @@ def cart_clear(request):
     cart.clear()
     return redirect("cart_detail")
 
-# 5. कार्ट का पेज दिखाना
+# 5. कार्ट का पेज दिखाना (यहाँ हमने फाइल का नाम cart.html रखा है)
 def cart_detail(request):
     cart = Cart(request)
-    return render(request, 'shop/cart_detail.html', {'cart': cart})
+    return render(request, 'shop/cart.html', {'cart': cart})
 
-# 6. चेकआउट पेज (ऑर्डर प्लेस करने के लिए)
+# 6. चेकआउट और ऑर्डर सेव करना
 def checkout(request):
     cart = Cart(request)
     if request.method == "POST":
-        # फॉर्म से डेटा लेना
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         address = request.POST.get('address')
@@ -44,7 +43,7 @@ def checkout(request):
         phone = request.POST.get('phone')
         total_price = cart.get_total_price()
 
-        # ऑर्डर को डेटाबेस में सेव करना
+        # नया ऑर्डर बनाना
         order = Order.objects.create(
             first_name=first_name,
             last_name=last_name,
@@ -55,20 +54,18 @@ def checkout(request):
             status='Pending'
         )
         
-        # ऑर्डर होने के बाद कार्ट खाली कर देना
-        cart.clear()
+        cart.clear() # ऑर्डर के बाद कार्ट साफ़
         return render(request, 'shop/order_success.html', {'order': order})
 
     return render(request, 'shop/checkout.html', {'cart': cart})
 
-# 7. ऑर्डर ट्रैकिंग सिस्टम
+# 7. ट्रैकिंग सिस्टम
 def track_order(request):
     order = None
     error_msg = None
     if request.method == 'POST':
         order_id = request.POST.get('order_id')
         try:
-            # ID से ऑर्डर ढूंढना
             order = Order.objects.get(id=order_id)
         except (Order.DoesNotExist, ValueError):
             error_msg = "माफ़ कीजिये, इस ID का कोई ऑर्डर नहीं मिला।"
