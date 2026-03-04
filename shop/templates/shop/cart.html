@@ -22,7 +22,7 @@
                 <div class="cart-info">
                     <h4>{{ value.name }}</h4>
                     <p>Price: ₹{{ value.price }} | Quantity: {{ value.quantity }}</p>
-                    <a href="{% url 'item_clear' key %}" style="color: #007185; text-decoration: none; font-size: 13px;">Remove</a>
+                    <a href="{% url 'item_clear' value.product_id %}" style="color: #007185; text-decoration: none; font-size: 13px;">Remove</a>
                 </div>
                 <div style="font-weight: bold;">₹{{ value.total }}</div>
             </div>
